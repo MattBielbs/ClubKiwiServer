@@ -18,7 +18,17 @@ public class Main
         String temp = "";
         for(Object o : array)
         {
-            temp += (String)o + " ";
+            try
+            {
+                temp += (String) o + " ";
+            }
+            catch(ClassCastException ex)
+            {
+                if(ex.getMessage().contains("Double"))
+                    temp += Double.toString((Double)o) + " ";
+                else if(ex.getMessage().contains("Integer"))
+                    temp += Integer.toString((Integer)o) + " ";
+            }
         }
         return temp;
     }
