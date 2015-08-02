@@ -2,35 +2,71 @@ package com.clubkiwiserver;
 import com.clubkiwiserver.Packet.*;
 
 import java.net.*;
+import java.util.ArrayList;
 
 public class Main
 {
 
     static Serializer s;
+    static ArrayList<Client> Clients;
+    static DatagramSocket serverSocket;
+    static DBHelper dbHelper;
+    static boolean running;
+
+    public static String arraytostring(Object[] array)
+    {
+        String temp = "";
+        for(Object o : array)
+        {
+            temp += (String)o + " ";
+        }
+        return temp;
+    }
 
     public static void main(String[] args) throws Exception
     {
         s = new Serializer();
-        DatagramSocket serverSocket = new DatagramSocket(9876);
+        Clients = new ArrayList<Client>();
+        running = true;
+        dbHelper = new DBHelper();
+        dbHelper.Connect("user1", "user1", "ClubKiwi");
+        dbHelper.CreateSkeleton();
+
+        serverSocket = new DatagramSocket(5678);
         byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
-        while (true)
+
+        while (running)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             serverSocket.receive(receivePacket);
 
-
+            Client temp = getClient(receivePacket.getAddress(), receivePacket.getPort());
             Packet p = s.Deserialize(receivePacket.getData());
-            if (p == null)
-                return;
-
-            System.out.println("RECEIVED: \n" + p.getType().toString() + ": " + (String)p.getData(0) + ", " + (String)p.getData(1));
-        //    InetAddress IPAddress = receivePacket.getAddress();
-        //    int port = receivePacket.getPort();
-        //    String capitalizedSentence = sentence.toUpperCase();
-        //    sendData = capitalizedSentence.getBytes();
-         //   DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-          //  serverSocket.send(sendPacket);
+            if(temp == null)
+            {
+                Client lol = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
+                Clients.add(lol);
+                lol.OnDataReceive(p);
+            }
+            else
+            {
+                temp.OnDataReceive(p);
+            }
         }
+
+       dbHelper.Shutdown();
+    }
+
+
+
+    public static Client getClient(InetAddress address, int port)
+    {
+        for(Client c : Clients)
+        {
+            if(c.getIPAddress() == address && c.getiPort() == port)
+                return c;
+        }
+
+        return null;
     }
 }

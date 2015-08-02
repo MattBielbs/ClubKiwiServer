@@ -17,6 +17,7 @@ public class Serializer
         Types.put(Boolean.class, 0);
         Types.put(Integer.class, 1);
         Types.put(String.class, 2);
+        Types.put(Double.class, 3);
     }
 
     /*
@@ -54,6 +55,9 @@ public class Serializer
                         break;
                     case 2:
                         s.writeUTF((String) d);
+                        break;
+                    case 3:
+                        s.writeDouble((Double) d);
                         break;
                 }
             }
@@ -106,6 +110,9 @@ public class Serializer
                         break;
                     case 2:
                         Items.add(s.readUTF());
+                        break;
+                    case 3:
+                        Items.add(s.readDouble());
                         break;
                 }
             }
