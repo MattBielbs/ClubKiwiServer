@@ -45,6 +45,8 @@ public class Main
         serverSocket = new DatagramSocket(5678);
         byte[] receiveData = new byte[1024];
 
+        System.out.println("Server Listening...");
+
         while (running)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
