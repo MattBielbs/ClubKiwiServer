@@ -5,7 +5,7 @@ package com.clubkiwiserver.Packet;
  */
 public enum PacketType
 {//C=client, S=server
-    //trevor says should be uppercase
+    //trevor says should be uppercase rip
     Connect,
     CreateUser_S,
     CreateUser_C,
