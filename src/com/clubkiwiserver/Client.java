@@ -77,7 +77,7 @@ public class Client
             //    public Kiwi(String name, double health, double money, double strength, double speed, double flight, double swag, double hunger, double social, double energy)
 
             //fake character for now
-            byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, "Matypatty", 100, 200, 300, 400, 1, 420, 666, 0, 123);
+            byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, "Matypatty", 100.0, 200.0, 300.0, 400.0, 1.0, 420.0, 666.0, 0.0, 123.0);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
             Main.serverSocket.send(sendPacket);
         }
