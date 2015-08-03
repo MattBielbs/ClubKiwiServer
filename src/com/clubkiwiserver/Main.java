@@ -3,15 +3,18 @@ import com.clubkiwiserver.Packet.*;
 
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Main
+public class Main implements Runnable
 {
 
     static Serializer s;
-    static ArrayList<Client> Clients;
+    public static ArrayList<Client> Clients;
     static DatagramSocket serverSocket;
     static DBHelper dbHelper;
-    static boolean running;
+    static GameLogic gameLogic;
+    static boolean running; //All thread should while this so that the app can close properly through the exit command.
+    private static Scanner scan;
 
     public static String arraytostring(Object[] array)
     {
@@ -45,42 +48,105 @@ public class Main
         s = new Serializer();
         Clients = new ArrayList<Client>();
         running = true;
+
+        //Start database
         dbHelper = new DBHelper();
         dbHelper.Connect("user1", "user1", "ClubKiwi");
         dbHelper.CreateSkeleton();
 
+        //Start gamelogic
+        gameLogic = new GameLogic();
+
+
+        //Start Serverloop
         serverSocket = new DatagramSocket(5678);
-        byte[] receiveData = new byte[1024];
+        Main m = new Main();
+        Thread thread = new Thread(m);
+        thread.start();
 
         System.out.println("Server Listening...");
 
-        while (running)
+        //Input loop for server commands
+        scan = new Scanner(System.in);
+        while(running)
         {
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            serverSocket.receive(receivePacket);
+            String command = scan.nextLine();
 
-            Client temp = getClient(receivePacket.getAddress(), receivePacket.getPort());
-            Packet p = s.Deserialize(receivePacket.getData());
-            if(temp == null)
+            String[] split = command.split("\\s");
+            if(split[0].equalsIgnoreCase("exit"))
             {
-                Client lol = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
-                Clients.add(lol);
-                lol.OnDataReceive(p);
+                m.serverSocket.close();
+                gameLogic.getThread().interrupt();
+                running = false;
+            }
+            else if(split[0].equalsIgnoreCase("list"))
+            {
+                for(Client c : Main.Clients)
+                {
+                    System.out.println(c.toString());
+                }
+            }
+            else if(split[0].equalsIgnoreCase("set"))
+            {
+                try
+                {
+                    switch (split[1])
+                    {
+                        case "timeframe":
+                            gameLogic.timeFrame = Double.parseDouble(split[2]);
+                            gameLogic.getThread().interrupt();
+                            System.out.println(split[1] + " updated");
+                            break;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    System.out.println("Invalid syntax (set variable value)");
+                }
             }
             else
             {
-                temp.OnDataReceive(p);
+                System.out.println("Invalid command.");
             }
         }
     }
 
+    @Override
+    public void run()
+    {
+        byte[] receiveData = new byte[1024];
 
+        while (running)
+        {
+            try
+            {
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+
+                Client temp = getClient(receivePacket.getAddress(), receivePacket.getPort());
+                Packet p = s.Deserialize(receivePacket.getData());
+                if (temp == null)
+                {
+                    Client lol = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
+                    Clients.add(lol);
+                    lol.OnDataReceive(p);
+                } else
+                {
+                    temp.OnDataReceive(p);
+                }
+            }
+            catch(Exception ex)
+            {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
 
     public static Client getClient(InetAddress address, int port)
     {
         for(Client c : Clients)
         {
-            if(c.getIPAddress() == address && c.getiPort() == port)
+            if(c.getIPAddress().equals(address) && c.getiPort() == port)
                 return c;
         }
 

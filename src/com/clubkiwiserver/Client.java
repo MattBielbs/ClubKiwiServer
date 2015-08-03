@@ -87,7 +87,10 @@ public class Client
                 setPassword(password);
                 setkInstance(k);
             }
-
+        }
+        else if(p.getType() == PacketType.Disconnect)
+        {
+            Main.Clients.remove(this);
         }
     }
 
@@ -156,8 +159,34 @@ public class Client
         return kInstance;
     }
 
+    //every time this is set then the client should be updated.
     public void setkInstance(Kiwi kInstance)
     {
         this.kInstance = kInstance;
+
+        try
+        {
+            byte[] sendData = Main.s.Serialize(PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getSocial(), kInstance.getEnergy());
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
+            Main.serverSocket.send(sendPacket);
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Error updating client");
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Client{" +
+                "clientState=" + clientState +
+                ", IPAddress=" + IPAddress +
+                ", iPort=" + iPort +
+                ", id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", kInstance=" + kInstance +
+                '}';
     }
 }

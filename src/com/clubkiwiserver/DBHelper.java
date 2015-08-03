@@ -121,6 +121,9 @@ public class DBHelper
 
     public Integer GetUserID(String username, String password)
     {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to get user id.");
+
         try
         {
             //Grab all matching.
@@ -141,6 +144,9 @@ public class DBHelper
 
     public Kiwi CreateUser(String username, String password)
     {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to create user.");
+
         try
         {
             //Make sure the user doesn't already exist.
@@ -171,8 +177,12 @@ public class DBHelper
         return null;
     }
 
+    //Also used to get character
     public Kiwi Login(String username, String password)
     {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to login.");
+
         try
         {
             Integer accid = GetUserID(username, password);
@@ -194,5 +204,21 @@ public class DBHelper
         }
 
         return null;
+    }
+
+    public void Tick()
+    {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to run game tick.");
+
+        try
+        {
+            s.execute("UPDATE characters SET hunger = hunger - 1 WHERE hunger > 0");
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("An exception occurred while running tick.");
+            System.out.println(ex.getMessage());
+        }
     }
 }
