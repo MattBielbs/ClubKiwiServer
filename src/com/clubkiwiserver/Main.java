@@ -35,6 +35,13 @@ public class Main
 
     public static void main(String[] args) throws Exception
     {
+        //Stop the database from getting owned
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                dbHelper.Shutdown();
+            }
+        });
+
         s = new Serializer();
         Clients = new ArrayList<Client>();
         running = true;
@@ -65,8 +72,6 @@ public class Main
                 temp.OnDataReceive(p);
             }
         }
-
-       dbHelper.Shutdown();
     }
 
 

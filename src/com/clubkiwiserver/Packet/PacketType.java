@@ -12,5 +12,6 @@ public enum PacketType
     Login_S,
     Login_C,
     CharacterList_S,
-    CharacterList_C
+    CharacterList_C,
+    KiwiUpdate_S
 }

@@ -1,4 +1,5 @@
 package com.clubkiwiserver;
+import com.clubkiwi.Character.Kiwi;
 import com.clubkiwiserver.Packet.Packet;
 import com.clubkiwiserver.Packet.PacketType;
 
@@ -11,13 +12,15 @@ public class Client
 {
     enum ClientState
     {
-        Connecting,
-        Connected
+        Connected,
+        LoggedIn
     }
 
     private ClientState clientState;
     private InetAddress IPAddress;
     private int iPort, id;
+    private String username, password;
+    private Kiwi kInstance;
 
     public Client(ClientState clientState, InetAddress IPAddress, int iPort)
     {
@@ -35,53 +38,57 @@ public class Client
 
         if(p.getType() == PacketType.Login_C)
         {
-            int id = Main.dbHelper.Login((String) p.getData(0), (String) p.getData(1));
+            String username = (String) p.getData(0);
+            String password = (String) p.getData(1);
+            Kiwi k = Main.dbHelper.Login(username, password);
 
-            if(id == 0)
+            if(k == null)
             {
-                //failed
+                //failed send error message
                 byte[] sendData = Main.s.Serialize(PacketType.Login_S, id,"Wrong username or password");
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
                 Main.serverSocket.send(sendPacket);
             }
             else
             {
-                //worked lol
-                byte[] sendData = Main.s.Serialize(PacketType.Login_S, id, "Login accepted");
+                //worked send kiwi
+                byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
                 Main.serverSocket.send(sendPacket);
+
+                setClientState(ClientState.LoggedIn);
+                setUsername(username);
+                setPassword(password);
+                setkInstance(k);
             }
         }
         else if(p.getType() == PacketType.CreateUser_C)
         {
-            int id = Main.dbHelper.CreateUser((String) p.getData(0), (String) p.getData(1));
+            String username = (String) p.getData(0);
+            String password = (String) p.getData(1);
+            Kiwi k = Main.dbHelper.CreateUser(username, password);
 
-            if(id == 0)
+            if(k == null)
             {
-                //failed
+                //failed send error
                 byte[] sendData = Main.s.Serialize(PacketType.CreateUser_S, id,"That username is already taken, please try again.");
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
                 Main.serverSocket.send(sendPacket);
             }
             else
             {
-                //worked lol
-                byte[] sendData = Main.s.Serialize(PacketType.CreateUser_S, id, "Account created.");
+                //worked send default kiwi
+                byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
                 Main.serverSocket.send(sendPacket);
+
+                setClientState(ClientState.LoggedIn);
+                setUsername(username);
+                setPassword(password);
+                setkInstance(k);
             }
 
         }
-        else if(p.getType() == PacketType.CharacterList_C)
-        {
-            //    public Kiwi(String name, double health, double money, double strength, double speed, double flight, double swag, double hunger, double social, double energy)
-
-            //fake character for now
-            byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, "Matypatty", 100.0, 200.0, 300.0, 400.0, 1.0, 420.0, 666.0, 0.0, 123.0);
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-            Main.serverSocket.send(sendPacket);
-        }
-
     }
 
     public ClientState getClientState()
@@ -122,5 +129,35 @@ public class Client
     public void setId(int id)
     {
         this.id = id;
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    public Kiwi getkInstance()
+    {
+        return kInstance;
+    }
+
+    public void setkInstance(Kiwi kInstance)
+    {
+        this.kInstance = kInstance;
     }
 }

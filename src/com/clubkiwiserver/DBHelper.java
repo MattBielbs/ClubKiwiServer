@@ -1,4 +1,6 @@
 package com.clubkiwiserver;
+import com.clubkiwi.Character.Kiwi;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +14,7 @@ import java.security.*;
 
 /**
  * Handles all the derbydb nasty things
+ * most methods use username and password saved in the client class to auth every action.
  */
 public class DBHelper
 {
@@ -99,7 +102,7 @@ public class DBHelper
             System.out.print("Users ");
             s.execute("create table users(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), username varchar(16), password varchar(16))");
             System.out.print("OK! \nCharacters ");
-            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health int)");
+            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health int, money int, strength int, speed int, flight int, swag int, hunger int, social int, energy int)");
             System.out.print("OK! \nItems ");
             s.execute("create table items(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(100), description varchar(100))");
             System.out.println("OK!");
@@ -116,7 +119,27 @@ public class DBHelper
         }
     }
 
-    public Integer CreateUser(String username, String password)
+    public Integer GetUserID(String username, String password)
+    {
+        try
+        {
+            //Grab all matching.
+            rs = s.executeQuery("SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'");
+
+            //User exists
+            if (rs.next())
+                return rs.getInt("id");
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("An exception occured while geting userid.");
+            System.out.println(ex.getMessage());
+        }
+
+        return 0;
+    }
+
+    public Kiwi CreateUser(String username, String password)
     {
         try
         {
@@ -130,7 +153,12 @@ public class DBHelper
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
                 rs.next();
-                return rs.getInt(1);
+                int accid = rs.getInt(1);
+
+                //Create a default kiwi for the user
+                Kiwi k = new Kiwi(username, 100, 0, 0, 0, 0, 0, 100, 100, 100);
+                s.execute("INSERT INTO characters (accid, name, health, money, strength, speed, flight, swag, hunger, social, energy) VALUES (" + accid + ", '" + username + "', 100, 0, 0, 0, 0, 0, 100, 100, 100)");
+                return k;
 
             }
         }
@@ -140,26 +168,31 @@ public class DBHelper
             System.out.println(ex.getMessage());
         }
 
-        return 0;
+        return null;
     }
 
-    public Integer Login(String username, String password)
+    public Kiwi Login(String username, String password)
     {
         try
         {
-            //Grab all matching.
-            rs = s.executeQuery("SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'");
+            Integer accid = GetUserID(username, password);
+            if(accid != 0)
+            {
+                rs = s.executeQuery("SELECT * FROM characters WHERE accid =" + accid);
 
-            //User exists, return true.
-            if (rs.next())
-                return rs.getInt(1);
+                if(rs.next())
+                {
+                    //tis should always be the case else the acc needs to be deleted rip
+                    return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("social"), rs.getDouble("energy"));
+                }
+            }
         }
         catch(SQLException ex)
         {
-            System.out.println("An exception occured while creating the user.");
+            System.out.println("An exception occured while logging in the user.");
             System.out.println(ex.getMessage());
         }
 
-        return 0;
+        return null;
     }
 }
