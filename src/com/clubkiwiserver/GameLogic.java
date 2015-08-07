@@ -10,7 +10,6 @@ public class GameLogic implements Runnable
 {
 
     private Thread thread;
-    public static double timeFrame = 1.0;// 1 means 100% of 60mins
 
     public GameLogic()
     {
@@ -26,10 +25,10 @@ public class GameLogic implements Runnable
         {
             try
             {
-                Thread.sleep(Math.round(86400 * timeFrame));
+                Thread.sleep(Math.round(86400 * (Double)Main.cVarRegistry.getCVar("timeframe").getValue()));
                 Helper.println("Tick");
                 //every 1.44minutes makes 100 health turn to 0 in 24
-                Main.dbHelper.Tick();
+                Main.dbHelper.DecreaseAllHunger();
 
                 //update the server version of the clients kiwi then send it over as an update packet.
                 for (Client c : Main.Clients)

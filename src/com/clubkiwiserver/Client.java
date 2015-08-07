@@ -18,15 +18,15 @@ public class Client
 
     private ClientState clientState;
     private InetAddress IPAddress;
-    private int iPort, id;
+    private int port, id;
     private String username, password;
     private Kiwi kInstance;
 
-    public Client(ClientState clientState, InetAddress IPAddress, int iPort)
+    public Client(ClientState clientState, InetAddress IPAddress, int port)
     {
         this.clientState = clientState;
         this.IPAddress = IPAddress;
-        this.iPort = iPort;
+        this.port = port;
     }
 
     public void OnDataReceive(Packet p) throws Exception
@@ -44,17 +44,12 @@ public class Client
 
             if(k == null)
             {
-                //failed send error message
-                byte[] sendData = Main.s.Serialize(PacketType.Login_S, id,"Wrong username or password");
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-                Main.serverSocket.send(sendPacket);
+                Main.SendData(this, PacketType.Login_S, id, "Wrong username or password");
             }
             else
             {
                 //worked send kiwi
-                byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-                Main.serverSocket.send(sendPacket);
+                Main.SendData(this,PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);
@@ -71,16 +66,12 @@ public class Client
             if(k == null)
             {
                 //failed send error
-                byte[] sendData = Main.s.Serialize(PacketType.CreateUser_S, id,"That username is already taken, please try again.");
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-                Main.serverSocket.send(sendPacket);
+                Main.SendData(this, PacketType.CreateUser_S, id, "That username is already taken, please try again.");
             }
             else
             {
                 //worked send default kiwi
-                byte[] sendData = Main.s.Serialize(PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-                Main.serverSocket.send(sendPacket);
+                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);
@@ -114,14 +105,14 @@ public class Client
         this.IPAddress = IPAddress;
     }
 
-    public int getiPort()
+    public int getPort()
     {
-        return iPort;
+        return port;
     }
 
-    public void setiPort(int iPort)
+    public void setPort(int port)
     {
-        this.iPort = iPort;
+        this.port = port;
     }
 
     public int getId()
@@ -164,16 +155,8 @@ public class Client
     {
         this.kInstance = kInstance;
 
-        try
-        {
-            byte[] sendData = Main.s.Serialize(PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getSocial(), kInstance.getEnergy());
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, iPort);
-            Main.serverSocket.send(sendPacket);
-        }
-        catch(Exception ex)
-        {
-            System.out.println("Error updating client");
-        }
+        //this could be optimised by checking to see if anything has actually changed
+        Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getSocial(), kInstance.getEnergy());
     }
 
     @Override
@@ -182,7 +165,7 @@ public class Client
         return "Client{" +
                 "clientState=" + clientState +
                 ", IPAddress=" + IPAddress +
-                ", iPort=" + iPort +
+                ", Port=" + port +
                 ", id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +

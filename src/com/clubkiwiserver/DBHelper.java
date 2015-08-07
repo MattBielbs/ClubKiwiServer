@@ -206,10 +206,10 @@ public class DBHelper
         return null;
     }
 
-    public void Tick()
+    public void DecreaseAllHunger()
     {
         if(!bConnected)
-            throw new IllegalStateException("You must be connected to the database to run game tick.");
+            throw new IllegalStateException("You must be connected to the database to decrease hunger.");
 
         try
         {

@@ -1,9 +1,10 @@
 package com.clubkiwiserver;
+import com.clubkiwiserver.CVar.*;
 import com.clubkiwiserver.Packet.*;
 
+import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main implements Runnable
 {
@@ -11,11 +12,14 @@ public class Main implements Runnable
     static Serializer s;
     public static ArrayList<Client> Clients;
     static DatagramSocket serverSocket;
-    static DBHelper dbHelper;
-    static GameLogic gameLogic;
-    static boolean running; //All thread should while this so that the app can close properly through the exit command.
+    public static DBHelper dbHelper;
+    public static GameLogic gameLogic;
+    public static CVarRegistry cVarRegistry;
+    public static boolean running; //All thread should while this so that the app can close properly through the exit command.
     private static Scanner scan;
+    private static Thread thread;
 
+    //used to debug print network messages
     public static String arraytostring(Object[] array)
     {
         String temp = "";
@@ -49,6 +53,9 @@ public class Main implements Runnable
         Clients = new ArrayList<Client>();
         running = true;
 
+        //Create cVars
+        cVarRegistry = new CVarRegistry();
+
         //Start database
         dbHelper = new DBHelper();
         dbHelper.Connect("user1", "user1", "ClubKiwi");
@@ -61,7 +68,7 @@ public class Main implements Runnable
         //Start Serverloop
         serverSocket = new DatagramSocket(5678);
         Main m = new Main();
-        Thread thread = new Thread(m);
+        thread = new Thread(m);
         thread.start();
 
         System.out.println("Server Listening...");
@@ -71,44 +78,10 @@ public class Main implements Runnable
         while(running)
         {
             String command = scan.nextLine();
-
-            String[] split = command.split("\\s");
-            if(split[0].equalsIgnoreCase("exit"))
-            {
-                m.serverSocket.close();
-                gameLogic.getThread().interrupt();
-                running = false;
-            }
-            else if(split[0].equalsIgnoreCase("list"))
-            {
-                for(Client c : Main.Clients)
-                {
-                    System.out.println(c.toString());
-                }
-            }
-            else if(split[0].equalsIgnoreCase("set"))
-            {
-                try
-                {
-                    switch (split[1])
-                    {
-                        case "timeframe":
-                            gameLogic.timeFrame = Double.parseDouble(split[2]);
-                            gameLogic.getThread().interrupt();
-                            System.out.println(split[1] + " updated");
-                            break;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    System.out.println("Invalid syntax (set variable value)");
-                }
-            }
-            else
-            {
-                System.out.println("Invalid command.");
-            }
+            cVarRegistry.doCommand(command);
         }
+
+        serverSocket.close();
     }
 
     @Override
@@ -142,14 +115,33 @@ public class Main implements Runnable
         }
     }
 
+    public static void SendData(Client c, PacketType type, Object ... args)
+    {
+        try
+        {
+            byte[] sendData = s.Serialize(type, args);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, c.getIPAddress(), c.getPort());
+            serverSocket.send(sendPacket);
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Error sending data to client.");
+        }
+    }
+
     public static Client getClient(InetAddress address, int port)
     {
         for(Client c : Clients)
         {
-            if(c.getIPAddress().equals(address) && c.getiPort() == port)
+            if(c.getIPAddress().equals(address) && c.getPort() == port)
                 return c;
         }
 
         return null;
+    }
+
+    public static Thread getThread()
+    {
+        return thread;
     }
 }
