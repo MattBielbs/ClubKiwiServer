@@ -16,6 +16,7 @@ public class CVarRegistry
     {
         Registry = new HashMap<String, CVar>();
         Registry.put("timeframe", new CVar(1.0));
+        Registry.put("debuginfo", new CVar(0));
     }
 
     public void doCommand(String command)
@@ -64,9 +65,9 @@ public class CVarRegistry
         }
     }
 
-    public CVar getCVar(String cvar)
+    public Object getCVar(String cvar)
     {
-        return Registry.get(cvar);
+        return Registry.get(cvar).getValue();
     }
 
 }

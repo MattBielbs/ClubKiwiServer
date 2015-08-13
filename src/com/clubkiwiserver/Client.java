@@ -34,7 +34,8 @@ public class Client
         if (p == null || p.getAllData().length == 0)
             return;
 
-        System.out.println(p.getType().toString() + ": " + Main.arraytostring(p.getAllData()));
+        if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
+            System.out.println(p.getType().toString() + ": " + Main.arraytostring(p.getAllData()));
 
         if(p.getType() == PacketType.Login_C)
         {
@@ -49,7 +50,7 @@ public class Client
             else
             {
                 //worked send kiwi
-                Main.SendData(this,PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
+                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getSocial(), k.getEnergy());
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);

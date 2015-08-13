@@ -25,8 +25,11 @@ public class GameLogic implements Runnable
         {
             try
             {
-                Thread.sleep(Math.round(86400 * (Double)Main.cVarRegistry.getCVar("timeframe").getValue()));
-                Helper.println("Tick");
+                Thread.sleep(Math.round(86400 * (Double) Main.cVarRegistry.getCVar("timeframe")));
+
+                if((int)Main.cVarRegistry.getCVar("debuginfo") > 0)
+                    Helper.println("Tick");
+
                 //every 1.44minutes makes 100 health turn to 0 in 24
                 Main.dbHelper.DecreaseAllHunger();
 
