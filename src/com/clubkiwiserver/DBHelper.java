@@ -102,7 +102,7 @@ public class DBHelper
             System.out.print("Users ");
             s.execute("create table users(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), username varchar(16), password varchar(16))");
             System.out.print("OK! \nCharacters ");
-            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health int, money int, strength int, speed int, flight int, swag int, hunger int, social int, energy int)");
+            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health int, money int, strength int, speed int, flight int, swag int, hunger int, mood int, energy int)");
             System.out.print("OK! \nItems ");
             s.execute("create table items(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(100), description varchar(100))");
             System.out.println("OK!");
@@ -163,7 +163,7 @@ public class DBHelper
 
                 //Create a default kiwi for the user
                 Kiwi k = new Kiwi(username, 100, 0, 0, 0, 0, 0, 100, 100, 100);
-                s.execute("INSERT INTO characters (accid, name, health, money, strength, speed, flight, swag, hunger, social, energy) VALUES (" + accid + ", '" + username + "', 100, 0, 0, 0, 0, 0, 100, 100, 100)");
+                s.execute("INSERT INTO characters (accid, name, health, money, strength, speed, flight, swag, hunger, mood, energy) VALUES (" + accid + ", '" + username + "', 100, 0, 0, 0, 0, 0, 100, 100, 100)");
                 return k;
 
             }
@@ -193,7 +193,7 @@ public class DBHelper
                 if(rs.next())
                 {
                     //tis should always be the case else the acc needs to be deleted rip
-                    return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("social"), rs.getDouble("energy"));
+                    return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
                 }
             }
         }
@@ -214,10 +214,44 @@ public class DBHelper
         try
         {
             s.execute("UPDATE characters SET hunger = hunger - 1 WHERE hunger > 0");
+            s.execute("UPDATE characters SET health = health - 1 WHERE hunger = 0 AND health > 0");
         }
         catch(SQLException ex)
         {
             System.out.println("An exception occurred while running tick.");
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void UpdateCharacter(Client c, double health, double money, double strength, double speed, double flight, double swag, double hunger, double mood, double energy)
+    {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to update character.");
+
+        try
+        {
+            s.execute("UPDATE characters SET health = " + health + ", money = " + money + ", strength = " + strength + ", speed = " + speed + ", flight = " + flight + ", swag = " + swag + ", hunger = " + hunger + ", mood = " + mood + ", energy = " + energy + " WHERE accid = " + GetUserID(c.getUsername(), c.getPassword()));
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("An exception occurred while updating character.");
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    //might need this later
+    public void SetStat(Client c, String stat, double value)
+    {
+        if(!bConnected)
+            throw new IllegalStateException("You must be connected to the database to set stat " + stat);
+
+        try
+        {
+            s.execute("UPDATE characters SET " + value + " = " + value + " WHERE accid = " + GetUserID(c.getUsername(), c.getPassword()));
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("An exception occurred while setting stat: " + stat);
             System.out.println(ex.getMessage());
         }
     }

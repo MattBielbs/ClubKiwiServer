@@ -30,8 +30,7 @@ public class GameLogic implements Runnable
                 if((int)Main.cVarRegistry.getCVar("debuginfo") > 0)
                     Helper.println("Tick");
 
-                //every 1.44minutes makes 100 health turn to 0 in 24
-                Main.dbHelper.DecreaseAllHunger();
+                Main.dbHelper.DecreaseAllHunger(); //this should also decrease health if hunger is 0
 
                 //update the server version of the clients kiwi then send it over as an update packet.
                 for (Client c : Main.Clients)

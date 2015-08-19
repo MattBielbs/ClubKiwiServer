@@ -60,6 +60,10 @@ public class CVarRegistry
                 Main.getThread().interrupt();
                 Main.gameLogic.getThread().interrupt();
             }
+            else if(split[0].compareToIgnoreCase("force") == 0)
+            {
+                Main.gameLogic.getThread().interrupt();
+            }
             else
                 System.out.println("usage: get/set variable value");
         }
