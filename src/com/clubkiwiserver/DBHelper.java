@@ -34,6 +34,7 @@ public class DBHelper
         rs = null;
     }
 
+    //Connect to the database.
     public void Connect(String username, String password, String dbName)
     {
         Properties props = new Properties();
@@ -52,6 +53,7 @@ public class DBHelper
         }
     }
 
+    //Closes the database correctly.
     public void Shutdown()
     {
         bConnected = false;
@@ -88,6 +90,7 @@ public class DBHelper
         }
     }
 
+    //Used to create the tables in the database i they dont exist.
     public void CreateSkeleton()
     {
         if(!bConnected)
@@ -119,6 +122,7 @@ public class DBHelper
         }
     }
 
+    //Helper function used to get the userid.
     public Integer GetUserID(String username, String password)
     {
         if(!bConnected)
@@ -185,6 +189,7 @@ public class DBHelper
 
         try
         {
+            //grab the account id so we can get the character.
             Integer accid = GetUserID(username, password);
             if(accid != 0)
             {
@@ -192,7 +197,7 @@ public class DBHelper
 
                 if(rs.next())
                 {
-                    //tis should always be the case else the acc needs to be deleted rip
+                    //this should always be the case else the acc needs to be deleted rip
                     return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
                 }
             }

@@ -49,6 +49,7 @@ public class Main implements Runnable
             }
         });
 
+        //Set some default values
         s = new Serializer();
         Clients = new ArrayList<Client>();
         running = true;
@@ -77,6 +78,7 @@ public class Main implements Runnable
         scan = new Scanner(System.in);
         while(running)
         {
+            //All commands are handled by the consolevariable class, how nice.
             String command = scan.nextLine();
             cVarRegistry.doCommand(command);
         }
@@ -84,6 +86,7 @@ public class Main implements Runnable
         serverSocket.close();
     }
 
+    //The network recieve thread.
     @Override
     public void run()
     {
@@ -93,32 +96,39 @@ public class Main implements Runnable
         {
             try
             {
+                //Wait for packet recieve
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
 
-                Client temp = getClient(receivePacket.getAddress(), receivePacket.getPort());
+                //Check if its a new client or one that is alrhat is already connected
+                Client client = getClient(receivePacket.getAddress(), receivePacket.getPort());
                 Packet p = s.Deserialize(receivePacket.getData());
-                if (temp == null)
+
+                if (client == null)
                 {
-                    Client lol = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
-                    Clients.add(lol);
-                    lol.OnDataReceive(p);
-                } else
-                {
-                    temp.OnDataReceive(p);
+                    //Add a new client
+                    client = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
+                    Clients.add(client);
                 }
+
+                //Send the packet to the clients recieve function.
+                client.OnDataReceive(p);
+
             }
             catch(Exception ex)
             {
+                //Havent encountered any errors myself but this will print them.
                 System.out.println(ex.getMessage());
             }
         }
     }
 
+    //Nice and easy way to send data to a client.
     public static void SendData(Client c, PacketType type, Object ... args)
     {
         try
         {
+            //Format the packet and send it.
             byte[] sendData = s.Serialize(type, args);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, c.getIPAddress(), c.getPort());
             serverSocket.send(sendPacket);
@@ -129,6 +139,7 @@ public class Main implements Runnable
         }
     }
 
+    //Grabs a client from the list based on ip and port. (used to see if the client is already connected.
     public static Client getClient(InetAddress address, int port)
     {
         for(Client c : Clients)

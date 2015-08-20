@@ -29,16 +29,21 @@ public class Client
         this.port = port;
     }
 
+    //massive function might split it up later.
     public void OnDataReceive(Packet p) throws Exception
     {
+        //Make sure its not an empty or null packet.
         if (p == null || p.getAllData().length == 0)
             return;
 
+        //debug info
         if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
             System.out.println(p.getType().toString() + ": " + Main.arraytostring(p.getAllData()));
 
+        //Check the packet type
         if(p.getType() == PacketType.Login_C)
         {
+            //Try and log the player in
             String username = (String) p.getData(0);
             String password = (String) p.getData(1);
             Kiwi k = Main.dbHelper.Login(username, password);
@@ -49,7 +54,7 @@ public class Client
             }
             else
             {
-                //worked send kiwi
+                //Worked send kiwi
                 Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy());
 
                 setClientState(ClientState.LoggedIn);
@@ -60,6 +65,7 @@ public class Client
         }
         else if(p.getType() == PacketType.CreateUser_C)
         {
+            //Try and create a character using the login provided.
             String username = (String) p.getData(0);
             String password = (String) p.getData(1);
             Kiwi k = Main.dbHelper.CreateUser(username, password);

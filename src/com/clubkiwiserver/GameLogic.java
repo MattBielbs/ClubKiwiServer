@@ -25,8 +25,10 @@ public class GameLogic implements Runnable
         {
             try
             {
+                //Sleep for however long the tick is set to.
                 Thread.sleep(Math.round(86400 * (Double) Main.cVarRegistry.getCVar("timeframe")));
 
+                //some debug info
                 if((int)Main.cVarRegistry.getCVar("debuginfo") > 0)
                     Helper.println("Tick");
 
