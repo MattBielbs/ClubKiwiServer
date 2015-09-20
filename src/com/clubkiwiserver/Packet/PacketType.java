@@ -15,5 +15,12 @@ public enum PacketType
     CharacterList_C,
     KiwiUpdate_S,
     KiwiUpdate_C,
-    Disconnect
+    Disconnect_C,
+    Disconnect_S,
+    KiwiPos_C,
+    KiwiPos_S,
+    OtherPlayer_S,
+    Chat_C,
+    Chat_S
+
 }

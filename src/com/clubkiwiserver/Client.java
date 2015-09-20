@@ -22,8 +22,9 @@ public class Client
     private String username, password;
     private Kiwi kInstance;
 
-    public Client(ClientState clientState, InetAddress IPAddress, int port)
+    public Client(int id, ClientState clientState, InetAddress IPAddress, int port)
     {
+        this.id = id;
         this.clientState = clientState;
         this.IPAddress = IPAddress;
         this.port = port;
@@ -55,7 +56,7 @@ public class Client
             else
             {
                 //Worked send kiwi
-                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy());
+                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);
@@ -78,7 +79,7 @@ public class Client
             else
             {
                 //worked send default kiwi
-                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy());
+                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);
@@ -94,10 +95,28 @@ public class Client
             //Load values from database and overwrite, also send to client.
             setkInstance(Main.dbHelper.Login(getUsername(), getPassword()));
         }
-        else if(p.getType() == PacketType.Disconnect)
+        else if(p.getType() == PacketType.Disconnect_C)
         {
             //Client disconnect packet, remove from list.
             Main.Clients.remove(this);
+
+            //Tell other clients about this
+            broadcastKiwi(PacketType.Disconnect_S);
+        }
+        else if(p.getType() == PacketType.KiwiPos_C)
+        {
+            getkInstance().setX((int)p.getData(0));
+            getkInstance().setY((int)p.getData(1));
+
+            //Tell other clients about this
+            broadcastKiwi(PacketType.KiwiPos_S);
+        }
+        else if(p.getType() == PacketType.Chat_C)
+        {
+            for(Client c : Main.Clients)
+            {
+                Main.SendData(c, PacketType.Chat_S, id, p.getData(0));
+            }
         }
     }
 
@@ -173,6 +192,38 @@ public class Client
        this.kInstance = kInstance;
       // this could be optimised by checking to see if anything has actually changed
         Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+
+        //Tell other clients about this
+        broadcastKiwi(PacketType.OtherPlayer_S);
+
+        //Tell you about all clients
+        sendPlayers();
+    }
+
+    private void broadcastKiwi(PacketType type)
+    {
+        for(Client cc : Main.Clients)
+        {
+            if (cc.id != this.id)
+            {
+                //All other clients
+                if(type == PacketType.OtherPlayer_S)
+                    Main.SendData(cc, type, id, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+                else if(type == PacketType.Disconnect_S)
+                    Main.SendData(cc, type, id);
+                else if(type == PacketType.KiwiPos_S)
+                    Main.SendData(cc, type, id, kInstance.getX(), kInstance.getY());
+            }
+        }
+    }
+
+    private void sendPlayers()
+    {
+        for (Client cc : Main.Clients)
+        {
+            if (cc.id != this.id)
+                Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getStrength(), cc.kInstance.getSpeed(), cc.kInstance.getFlight(), cc.kInstance.getSwag(), cc.kInstance.getHunger(), cc.kInstance.getMood(), cc.kInstance.getEnergy());
+        }
     }
 
     @Override
@@ -184,8 +235,6 @@ public class Client
                 ", Port=" + port +
                 ", id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", kInstance=" + kInstance +
-                '}';
+                ", password='" + password + '\'' + '}';
     }
 }

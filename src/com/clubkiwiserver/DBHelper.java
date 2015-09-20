@@ -200,6 +200,10 @@ public class DBHelper
                     //this should always be the case else the acc needs to be deleted rip
                     return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
                 }
+                else
+                {
+                    System.out.println("Account has no character");
+                }
             }
         }
         catch(SQLException ex)

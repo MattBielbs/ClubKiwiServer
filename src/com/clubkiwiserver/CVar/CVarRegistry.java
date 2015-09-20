@@ -1,5 +1,6 @@
 package com.clubkiwiserver.CVar;
 
+import com.clubkiwiserver.Client;
 import com.clubkiwiserver.Main;
 
 import java.util.HashMap;
@@ -63,6 +64,13 @@ public class CVarRegistry
             else if(split[0].compareToIgnoreCase("force") == 0)
             {
                 Main.gameLogic.getThread().interrupt();
+            }
+            else if(split[0].compareToIgnoreCase("list") == 0)
+            {
+                for(Client c : Main.Clients)
+                {
+                    System.out.println(c.toString());
+                }
             }
             else
                 System.out.println("usage: get/set variable value");

@@ -107,7 +107,7 @@ public class Main implements Runnable
                 if (client == null)
                 {
                     //Add a new client
-                    client = new Client(Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
+                    client = new Client(Clients.size(), Client.ClientState.Connected, receivePacket.getAddress(), receivePacket.getPort());
                     Clients.add(client);
                 }
 
@@ -118,7 +118,7 @@ public class Main implements Runnable
             catch(Exception ex)
             {
                 //Havent encountered any errors myself but this will print them.
-                System.out.println(ex.getMessage());
+                System.out.println("rip error " + ex.getMessage());
             }
         }
     }
