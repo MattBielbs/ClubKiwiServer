@@ -9,14 +9,13 @@ import java.util.*;
 public class Main implements Runnable
 {
 
-    static Serializer s;
+    private static Serializer s;
     public static ArrayList<Client> Clients;
-    static DatagramSocket serverSocket;
+    private static DatagramSocket serverSocket;
     public static DBHelper dbHelper;
     public static GameLogic gameLogic;
     public static CVarRegistry cVarRegistry;
     public static boolean running; //All thread should while this so that the app can close properly through the exit command.
-    private static Scanner scan;
     private static Thread thread;
 
     //used to debug print network messages
@@ -27,7 +26,7 @@ public class Main implements Runnable
         {
             try
             {
-                temp += (String) o + " ";
+                temp += o + " ";
             }
             catch(ClassCastException ex)
             {
@@ -51,7 +50,7 @@ public class Main implements Runnable
 
         //Set some default values
         s = new Serializer();
-        Clients = new ArrayList<Client>();
+        Clients = new ArrayList<>();
         running = true;
 
         //Create cVars
@@ -75,7 +74,7 @@ public class Main implements Runnable
         System.out.println("Server Listening...");
 
         //Input loop for server commands
-        scan = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
         while(running)
         {
             //All commands are handled by the consolevariable class, how nice.
@@ -140,7 +139,7 @@ public class Main implements Runnable
     }
 
     //Grabs a client from the list based on ip and port. (used to see if the client is already connected.
-    public static Client getClient(InetAddress address, int port)
+    private static Client getClient(InetAddress address, int port)
     {
         for(Client c : Clients)
         {

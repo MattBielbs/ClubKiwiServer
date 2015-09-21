@@ -31,7 +31,7 @@ public class Client
     }
 
     //massive function might split it up later.
-    public void OnDataReceive(Packet p) throws Exception
+    public void OnDataReceive(Packet p)
     {
         //Make sure its not an empty or null packet.
         if (p == null || p.getAllData().length == 0)
@@ -135,29 +135,14 @@ public class Client
         return IPAddress;
     }
 
-    public void setIPAddress(InetAddress IPAddress)
-    {
-        this.IPAddress = IPAddress;
-    }
-
     public int getPort()
     {
         return port;
     }
 
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
-
     public int getId()
     {
         return id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
     }
 
     public String getUsername()

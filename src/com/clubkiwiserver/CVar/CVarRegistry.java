@@ -15,7 +15,7 @@ public class CVarRegistry
 
     public CVarRegistry()
     {
-        Registry = new HashMap<String, CVar>();
+        Registry = new HashMap<>();
         Registry.put("timeframe", new CVar(1.0));
         Registry.put("debuginfo", new CVar(0));
     }

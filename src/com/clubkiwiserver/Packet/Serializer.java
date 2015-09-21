@@ -9,11 +9,11 @@ import java.util.*;
  */
 public class Serializer
 {
-    Map<Type, Integer> Types;
+    private final Map<Type, Integer> Types;
 
     public Serializer()
     {
-        Types = new HashMap<Type, Integer>();
+        Types = new HashMap<>();
         Types.put(Boolean.class, 0);
         Types.put(Integer.class, 1);
         Types.put(String.class, 2);
@@ -81,13 +81,13 @@ public class Serializer
         try
         {
             //Object holder
-            ArrayList<Object> Items = new ArrayList<Object>();
+            ArrayList<Object> Items = new ArrayList<>();
 
             //Setup Streams
             ByteArrayInputStream stream = new ByteArrayInputStream(data);
             DataInputStream s = new DataInputStream(stream);
 
-            byte current = 0;
+            byte current;
 
             //Get the packet type
             PacketType p = PacketType.values()[s.readByte()];

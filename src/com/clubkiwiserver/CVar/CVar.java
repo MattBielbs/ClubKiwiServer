@@ -1,7 +1,5 @@
 package com.clubkiwiserver.CVar;
 
-import java.lang.reflect.Type;
-
 /**
  * Created by x201 on 6/08/2015.
  */

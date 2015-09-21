@@ -10,7 +10,6 @@ import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.security.*;
 
 /**
  * Handles all the derbydb nasty things
@@ -18,19 +17,18 @@ import java.security.*;
  */
 public class DBHelper
 {
-    Statement s;
-    ResultSet rs;
-    Connection conn;
-    Boolean bConnected = false;
-    ArrayList<Statement> statements;
+    private Statement s;
+    private ResultSet rs;
+    private Connection conn;
+    private Boolean bConnected = false;
+    private ArrayList<Statement> statements;
     private String framework = "embedded";
-    private String protocol = "jdbc:derby:";
 
 
     public DBHelper()
     {
         conn = null;
-        statements = new ArrayList<Statement>(); //statements added to here to be closed before exit.
+        statements = new ArrayList<>(); //statements added to here to be closed before exit.
         rs = null;
     }
 
@@ -43,6 +41,7 @@ public class DBHelper
 
         try
         {
+            String protocol = "jdbc:derby:";
             conn = DriverManager.getConnection(protocol + dbName + ";create=true", props);
             System.out.println("Connected to database.");
             bConnected = true;
@@ -83,10 +82,10 @@ public class DBHelper
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
         }
-        catch (SQLException se) {
+        catch (SQLException ex) {
             // SQL State XJO15 and SQLCode 50000 mean an OK shutdown.
-            if (!(se.getErrorCode() == 50000) && (se.getSQLState().equals("XJ015")))
-                System.err.println(se);
+            if (!(ex.getErrorCode() == 50000) && (ex.getSQLState().equals("XJ015")))
+                System.err.println(ex.getMessage());
         }
     }
 
@@ -123,7 +122,7 @@ public class DBHelper
     }
 
     //Helper function used to get the userid.
-    public Integer GetUserID(String username, String password) throws IllegalStateException
+    private Integer GetUserID(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to get user id.");

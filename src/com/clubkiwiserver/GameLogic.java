@@ -1,6 +1,5 @@
 package com.clubkiwiserver;
 
-import com.clubkiwi.Character.Kiwi;
 import com.clubkiwi.Helper;
 
 /**
@@ -9,7 +8,7 @@ import com.clubkiwi.Helper;
 public class GameLogic implements Runnable
 {
 
-    private Thread thread;
+    private final Thread thread;
 
     public GameLogic()
     {
