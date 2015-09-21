@@ -91,7 +91,7 @@ public class DBHelper
     }
 
     //Used to create the tables in the database i they dont exist.
-    public void CreateSkeleton()
+    public void CreateSkeleton() throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to create the skeleton.");
@@ -123,7 +123,7 @@ public class DBHelper
     }
 
     //Helper function used to get the userid.
-    public Integer GetUserID(String username, String password)
+    public Integer GetUserID(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to get user id.");
@@ -146,7 +146,7 @@ public class DBHelper
         return 0;
     }
 
-    public Kiwi CreateUser(String username, String password)
+    public Kiwi CreateUser(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to create user.");
@@ -182,7 +182,7 @@ public class DBHelper
     }
 
     //Also used to get character
-    public Kiwi Login(String username, String password)
+    public Kiwi Login(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to login.");
@@ -215,7 +215,7 @@ public class DBHelper
         return null;
     }
 
-    public void DecreaseAllHunger()
+    public void DecreaseAllHunger() throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to decrease hunger.");
@@ -232,7 +232,7 @@ public class DBHelper
         }
     }
 
-    public void UpdateCharacter(Client c, double health, double money, double strength, double speed, double flight, double swag, double hunger, double mood, double energy)
+    public void UpdateCharacter(Client c, double health, double money, double strength, double speed, double flight, double swag, double hunger, double mood, double energy) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to update character.");
@@ -249,7 +249,7 @@ public class DBHelper
     }
 
     //might need this later
-    public void SetStat(Client c, String stat, double value)
+    public void SetStat(Client c, String stat, double value) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to set stat " + stat);
