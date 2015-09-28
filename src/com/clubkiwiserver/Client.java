@@ -207,7 +207,10 @@ public class Client
         for (Client cc : Main.Clients)
         {
             if (cc.id != this.id)
+            {
                 Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getStrength(), cc.kInstance.getSpeed(), cc.kInstance.getFlight(), cc.kInstance.getSwag(), cc.kInstance.getHunger(), cc.kInstance.getMood(), cc.kInstance.getEnergy());
+                Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY());
+            }
         }
     }
 
