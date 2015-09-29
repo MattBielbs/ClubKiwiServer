@@ -107,6 +107,7 @@ public class Client
         {
             getkInstance().setX((int)p.getData(0));
             getkInstance().setY((int)p.getData(1));
+            getkInstance().setCurrentroom((int)p.getData(2));
 
             //Tell other clients about this
             broadcastKiwi(PacketType.KiwiPos_S);
@@ -197,7 +198,7 @@ public class Client
                 else if(type == PacketType.Disconnect_S)
                     Main.SendData(cc, type, id);
                 else if(type == PacketType.KiwiPos_S)
-                    Main.SendData(cc, type, id, kInstance.getX(), kInstance.getY());
+                    Main.SendData(cc, type, id, kInstance.getX(), kInstance.getY(), kInstance.getCurrentroom());
             }
         }
     }
@@ -209,7 +210,7 @@ public class Client
             if (cc.id != this.id)
             {
                 Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getStrength(), cc.kInstance.getSpeed(), cc.kInstance.getFlight(), cc.kInstance.getSwag(), cc.kInstance.getHunger(), cc.kInstance.getMood(), cc.kInstance.getEnergy());
-                Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY());
+                Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY(), cc.kInstance.getCurrentroom());
             }
         }
     }
