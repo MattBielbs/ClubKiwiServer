@@ -4,6 +4,7 @@ import com.clubkiwiserver.Packet.Packet;
 import com.clubkiwiserver.Packet.PacketType;
 
 import java.net.*;
+import java.util.ArrayList;
 
 /**
  * Created by Mathew on 8/2/2015.
@@ -105,9 +106,16 @@ public class Client
         }
         else if(p.getType() == PacketType.KiwiPos_C)
         {
-            getkInstance().setX((int)p.getData(0));
-            getkInstance().setY((int)p.getData(1));
-            getkInstance().setCurrentroom((int)p.getData(2));
+            getkInstance().setX((int) p.getData(0));
+            getkInstance().setY((int) p.getData(1));
+            if(getkInstance().getCurrentroom() != (int)p.getData(2))
+            {
+                //room switch event
+                getkInstance().setCurrentroom((int)p.getData(2));
+
+                sendDespensersFromRoom((int)p.getData(2));
+            }
+
 
             //Tell other clients about this
             broadcastKiwi(PacketType.KiwiPos_S);
@@ -118,6 +126,16 @@ public class Client
             {
                 Main.SendData(c, PacketType.Chat_S, id, p.getData(0));
             }
+        }
+    }
+
+    private void sendDespensersFromRoom(int room)
+    {
+        //send all dispensers to the kiwi based on this room.
+        ArrayList<Dispenser> items = Main.worldItems.getOrDefault(room, new ArrayList<>());
+        for(Dispenser item : items)
+        {
+            Main.SendData(this, PacketType.WorldItemAdd, item.getID(), item.getX(), item.getY(), item.isbVisible());
         }
     }
 

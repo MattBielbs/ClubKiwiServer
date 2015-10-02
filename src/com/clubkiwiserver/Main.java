@@ -1,4 +1,5 @@
 package com.clubkiwiserver;
+import com.clubkiwi.Managers.ResourceManager;
 import com.clubkiwiserver.CVar.*;
 import com.clubkiwiserver.Packet.*;
 
@@ -17,6 +18,9 @@ public class Main implements Runnable
     public static CVarRegistry cVarRegistry;
     public static boolean running; //All thread should while this so that the app can close properly through the exit command.
     private static Thread thread;
+
+    //to hold the world items
+    public static HashMap<Integer, ArrayList<Dispenser>> worldItems = new HashMap<>();
 
     //used to debug print network messages
     public static String arraytostring(Object[] array)
@@ -64,6 +68,11 @@ public class Main implements Runnable
         //Start gamelogic
         gameLogic = new GameLogic();
 
+        //Create worlditems
+        ArrayList<Dispenser> mainroom = new ArrayList<>();
+        mainroom.add(new Dispenser(0, 200, 200, true));
+        mainroom.add(new Dispenser(1, 800, 800, true));
+        worldItems.put(0, mainroom);
 
         //Start Serverloop
         serverSocket = new DatagramSocket(5678);
@@ -117,7 +126,7 @@ public class Main implements Runnable
             catch(Exception ex)
             {
                 //Havent encountered any errors myself but this will print them.
-                System.out.println("rip error " + ex.getMessage());
+                System.out.println("rip error " + ex.getMessage() + " " + ex.getLocalizedMessage());
             }
         }
     }

@@ -21,6 +21,9 @@ public enum PacketType
     KiwiPos_S,
     OtherPlayer_S,
     Chat_C,
-    Chat_S
+    Chat_S,
+    WorldItemAdd,
+    WorldItemRemove,
+    WorldItemUpdate
 
 }
