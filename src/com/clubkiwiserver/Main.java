@@ -138,7 +138,7 @@ public class Main implements Runnable
         {
             //debug info
             if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
-                System.out.println(type.toString() + ": " + args.toString());
+                System.out.println(type.toString() + ": " + arraytostring(args));
 
             //Format the packet and send it.
             byte[] sendData = s.Serialize(type, args);

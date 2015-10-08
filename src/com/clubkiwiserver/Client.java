@@ -41,7 +41,7 @@ public class Client
             return;
 
         //debug info
-        if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
+        if((int)Main.cVarRegistry.getCVar("debuginfo") > 1 && p.getType() != PacketType.KiwiPos_C)
             System.out.println(p.getType().toString() + ": " + Main.arraytostring(p.getAllData()));
 
         //Check the packet type
