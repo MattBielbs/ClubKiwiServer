@@ -1,4 +1,4 @@
-package com.clubkiwiserver;
+package com.clubkiwiserver.DataStructs;
 
 
 import java.awt.*;
@@ -6,12 +6,12 @@ import java.awt.*;
 /**
  * Created by Mathew on 10/2/2015.
  */
-public class Dispenser
+public class DispenserData
 {
     protected int ID, x, y, w, h;
     protected boolean bCollide, bVisible;
 
-    public Dispenser(int ID, int x, int y, boolean bVisible)
+    public DispenserData(int ID, int x, int y, boolean bVisible)
     {
         this.ID = ID;
         this.x = x;

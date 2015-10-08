@@ -1,5 +1,6 @@
 package com.clubkiwiserver;
 import com.clubkiwi.Character.Kiwi;
+import com.clubkiwiserver.DataStructs.KiwiData;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -145,7 +146,7 @@ public class DBHelper
         return 0;
     }
 
-    public Kiwi CreateUser(String username, String password) throws IllegalStateException
+    public KiwiData CreateUser(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to create user.");
@@ -165,7 +166,7 @@ public class DBHelper
                 int accid = rs.getInt(1);
 
                 //Create a default kiwi for the user
-                Kiwi k = new Kiwi(username, 100, 0, 0, 0, 0, 0, 100, 100, 100);
+                KiwiData k = new KiwiData(username, 100, 0, 0, 0, 0, 0, 100, 100, 100);
                 s.execute("INSERT INTO characters (accid, name, health, money, strength, speed, flight, swag, hunger, mood, energy) VALUES (" + accid + ", '" + username + "', 100, 0, 0, 0, 0, 0, 100, 100, 100)");
                 return k;
 
@@ -181,7 +182,7 @@ public class DBHelper
     }
 
     //Also used to get character
-    public Kiwi Login(String username, String password) throws IllegalStateException
+    public KiwiData Login(String username, String password) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to login.");
@@ -197,7 +198,7 @@ public class DBHelper
                 if(rs.next())
                 {
                     //this should always be the case else the acc needs to be deleted rip
-                    return new Kiwi(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
+                    return new KiwiData(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
                 }
                 else
                 {

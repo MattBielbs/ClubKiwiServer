@@ -1,5 +1,7 @@
 package com.clubkiwiserver;
 import com.clubkiwi.Character.Kiwi;
+import com.clubkiwiserver.DataStructs.DispenserData;
+import com.clubkiwiserver.DataStructs.KiwiData;
 import com.clubkiwiserver.Packet.Packet;
 import com.clubkiwiserver.Packet.PacketType;
 
@@ -21,7 +23,7 @@ public class Client
     private InetAddress IPAddress;
     private int port, id;
     private String username, password;
-    private Kiwi kInstance;
+    private KiwiData kInstance;
 
     public Client(int id, ClientState clientState, InetAddress IPAddress, int port)
     {
@@ -48,7 +50,7 @@ public class Client
             //Try and log the player in
             String username = (String) p.getData(0);
             String password = (String) p.getData(1);
-            Kiwi k = Main.dbHelper.Login(username, password);
+            KiwiData k = Main.dbHelper.Login(username, password);
 
             if(k == null)
             {
@@ -70,7 +72,7 @@ public class Client
             //Try and create a character using the login provided.
             String username = (String) p.getData(0);
             String password = (String) p.getData(1);
-            Kiwi k = Main.dbHelper.CreateUser(username, password);
+            KiwiData k = Main.dbHelper.CreateUser(username, password);
 
             if(k == null)
             {
@@ -108,10 +110,10 @@ public class Client
         {
             getkInstance().setX((int) p.getData(0));
             getkInstance().setY((int) p.getData(1));
-            if(getkInstance().getCurrentroom() != (int)p.getData(2))
+            if(getkInstance().getCurrentRoom() != (int)p.getData(2))
             {
                 //room switch event
-                getkInstance().setCurrentroom((int)p.getData(2));
+                getkInstance().setCurrentRoom((int) p.getData(2));
 
                 sendDespensersFromRoom((int)p.getData(2));
             }
@@ -132,8 +134,8 @@ public class Client
     private void sendDespensersFromRoom(int room)
     {
         //send all dispensers to the kiwi based on this room.
-        ArrayList<Dispenser> items = Main.worldItems.getOrDefault(room, new ArrayList<>());
-        for(Dispenser item : items)
+        ArrayList<DispenserData> items = Main.worldItems.getOrDefault(room, new ArrayList<>());
+        for(DispenserData item : items)
         {
             Main.SendData(this, PacketType.WorldItemAdd, item.getID(), item.getX(), item.getY(), item.isbVisible());
         }
@@ -184,18 +186,21 @@ public class Client
         this.password = password;
     }
 
-    public Kiwi getkInstance()
+    public KiwiData getkInstance()
     {
         return kInstance;
     }
 
 
     //every time this is set then the client should be updated.
-    public void setkInstance(Kiwi kInstance)
+    public void setkInstance(KiwiData kInstance)
     {
        this.kInstance = kInstance;
       // this could be optimised by checking to see if anything has actually changed
         Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+
+        //Tell client about dispensers in room
+        sendDespensersFromRoom(kInstance.getCurrentRoom());
 
         //Tell other clients about this
         broadcastKiwi(PacketType.OtherPlayer_S);
@@ -216,7 +221,7 @@ public class Client
                 else if(type == PacketType.Disconnect_S)
                     Main.SendData(cc, type, id);
                 else if(type == PacketType.KiwiPos_S)
-                    Main.SendData(cc, type, id, kInstance.getX(), kInstance.getY(), kInstance.getCurrentroom());
+                    Main.SendData(cc, type, id, kInstance.getX(), kInstance.getY(), kInstance.getCurrentRoom());
             }
         }
     }
@@ -228,7 +233,7 @@ public class Client
             if (cc.id != this.id)
             {
                 Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getStrength(), cc.kInstance.getSpeed(), cc.kInstance.getFlight(), cc.kInstance.getSwag(), cc.kInstance.getHunger(), cc.kInstance.getMood(), cc.kInstance.getEnergy());
-                Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY(), cc.kInstance.getCurrentroom());
+                Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY(), cc.kInstance.getCurrentRoom());
             }
         }
     }

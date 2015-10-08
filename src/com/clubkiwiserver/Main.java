@@ -1,6 +1,6 @@
 package com.clubkiwiserver;
-import com.clubkiwi.Managers.ResourceManager;
 import com.clubkiwiserver.CVar.*;
+import com.clubkiwiserver.DataStructs.DispenserData;
 import com.clubkiwiserver.Packet.*;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class Main implements Runnable
     private static Thread thread;
 
     //to hold the world items
-    public static HashMap<Integer, ArrayList<Dispenser>> worldItems = new HashMap<>();
+    public static HashMap<Integer, ArrayList<DispenserData>> worldItems = new HashMap<>();
 
     //used to debug print network messages
     public static String arraytostring(Object[] array)
@@ -69,9 +69,9 @@ public class Main implements Runnable
         gameLogic = new GameLogic();
 
         //Create worlditems
-        ArrayList<Dispenser> mainroom = new ArrayList<>();
-        mainroom.add(new Dispenser(0, 200, 200, true));
-        mainroom.add(new Dispenser(1, 800, 800, true));
+        ArrayList<DispenserData> mainroom = new ArrayList<>();
+        mainroom.add(new DispenserData(0, 200, 200, true));
+        mainroom.add(new DispenserData(1, 800, 800, true));
         worldItems.put(0, mainroom);
 
         //Start Serverloop
