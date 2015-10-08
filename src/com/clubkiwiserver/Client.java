@@ -115,7 +115,7 @@ public class Client
                 //room switch event
                 getkInstance().setCurrentRoom((int) p.getData(2));
 
-                sendDespensersFromRoom((int)p.getData(2));
+                sendDespensersFromRoom();
             }
 
 
@@ -129,15 +129,35 @@ public class Client
                 Main.SendData(c, PacketType.Chat_S, id, p.getData(0));
             }
         }
+        else if(p.getType() == PacketType.WorldItemRemove)
+        {
+            for(Client c : Main.Clients)
+            {
+                //set it as hidden on server
+                for(ArrayList<DispenserData> a :Main.worldItems.values())
+                {
+                    for(DispenserData d : a)
+                    {
+                        if(d.getID() == (int)p.getData(0))
+                        {
+                            d.setbVisible(false);
+                        }
+                    }
+                }
+                //tell clients its gone
+                Main.SendData(c, PacketType.WorldItemRemove, p.getData(0));
+            }
+        }
     }
 
-    private void sendDespensersFromRoom(int room)
+    public void sendDespensersFromRoom()
     {
         //send all dispensers to the kiwi based on this room.
-        ArrayList<DispenserData> items = Main.worldItems.getOrDefault(room, new ArrayList<>());
+        ArrayList<DispenserData> items = Main.worldItems.getOrDefault(kInstance.getCurrentRoom(), new ArrayList<>());
         for(DispenserData item : items)
         {
-            Main.SendData(this, PacketType.WorldItemAdd, item.getID(), item.getX(), item.getY(), item.isbVisible());
+            if(item.isbVisible())
+                Main.SendData(this, PacketType.WorldItemAdd, item.getID(), item.getX(), item.getY(), item.isbVisible());
         }
     }
 
@@ -199,8 +219,8 @@ public class Client
       // this could be optimised by checking to see if anything has actually changed
         Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
 
-        //Tell client about dispensers in room
-        sendDespensersFromRoom(kInstance.getCurrentRoom());
+        //Tell you about dispensers in room
+        sendDespensersFromRoom();
 
         //Tell other clients about this
         broadcastKiwi(PacketType.OtherPlayer_S);

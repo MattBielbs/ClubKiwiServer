@@ -105,7 +105,7 @@ public class DBHelper
             System.out.print("Users ");
             s.execute("create table users(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), username varchar(16), password varchar(16))");
             System.out.print("OK! \nCharacters ");
-            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health int, money int, strength int, speed int, flight int, swag int, hunger int, mood int, energy int)");
+            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health float, money int, strength int, speed int, flight int, swag int, hunger float, mood int, energy int)");
             System.out.print("OK! \nItems ");
             s.execute("create table items(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(100), description varchar(100))");
             System.out.println("OK!");
@@ -222,8 +222,8 @@ public class DBHelper
 
         try
         {
-            s.execute("UPDATE characters SET hunger = hunger - 1 WHERE hunger > 0");
-            s.execute("UPDATE characters SET health = health - 1 WHERE hunger = 0 AND health > 0");
+            s.execute("UPDATE characters SET hunger = hunger - 0.2 WHERE hunger > 0");
+            s.execute("UPDATE characters SET health = health - 0.2 WHERE hunger = 0 AND health > 0");
         }
         catch(SQLException ex)
         {

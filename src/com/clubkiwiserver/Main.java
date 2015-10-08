@@ -136,6 +136,10 @@ public class Main implements Runnable
     {
         try
         {
+            //debug info
+            if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
+                System.out.println(type.toString() + ": " + args.toString());
+
             //Format the packet and send it.
             byte[] sendData = s.Serialize(type, args);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, c.getIPAddress(), c.getPort());
