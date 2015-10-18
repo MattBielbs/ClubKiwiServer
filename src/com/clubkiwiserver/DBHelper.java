@@ -222,8 +222,10 @@ public class DBHelper
 
         try
         {
-            s.execute("UPDATE characters SET hunger = hunger - 0.2 WHERE hunger > 0");
-            s.execute("UPDATE characters SET health = health - 0.2 WHERE hunger = 0 AND health > 0");
+            s.execute("UPDATE characters SET hunger = hunger - 0.2 WHERE hunger >= 0.2");
+            s.execute("UPDATE characters SET hunger = 0.0 WHERE hunger <= 0.2");
+            s.execute("UPDATE characters SET health = health - 0.2 WHERE hunger = 0 AND health >= 0.2");
+            s.execute("UPDATE characters SET health = 0.0 WHERE hunger = 0 AND health <= 0.2");
         }
         catch(SQLException ex)
         {

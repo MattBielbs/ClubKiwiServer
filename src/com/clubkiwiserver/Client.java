@@ -40,10 +40,6 @@ public class Client
         if (p == null || p.getAllData().length == 0)
             return;
 
-        //debug info
-        if((int)Main.cVarRegistry.getCVar("debuginfo") > 1 && p.getType() != PacketType.KiwiPos_C)
-            System.out.println(p.getType().toString() + ": " + Main.arraytostring(p.getAllData()));
-
         //Check the packet type
         if(p.getType() == PacketType.Login_C)
         {
@@ -58,13 +54,21 @@ public class Client
             }
             else
             {
-                //Worked send kiwi
-                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
+                if(k.getHealth() <= 0)
+                {
+                    //your dead
+                    Main.SendData(this, PacketType.CharacterDead, k.getName());
+                }
+                else
+                {
+                    //Worked send kiwi
+                    Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
 
-                setClientState(ClientState.LoggedIn);
-                setUsername(username);
-                setPassword(password);
-                setkInstance(k);
+                    setClientState(ClientState.LoggedIn);
+                    setUsername(username);
+                    setPassword(password);
+                    setkInstance(k);
+                }
             }
         }
         else if(p.getType() == PacketType.CreateUser_C)
@@ -217,7 +221,11 @@ public class Client
     {
        this.kInstance = kInstance;
       // this could be optimised by checking to see if anything has actually changed
-        Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+
+        if(kInstance.getHealth() <= 0)
+            Main.SendData(this, PacketType.CharacterDead, kInstance.getName());
+        else
+            Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
 
         //Tell you about dispensers in room
         sendDespensersFromRoom();

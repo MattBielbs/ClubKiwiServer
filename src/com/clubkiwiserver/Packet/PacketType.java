@@ -24,6 +24,7 @@ public enum PacketType
     Chat_S,
     WorldItemAdd,
     WorldItemRemove,
-    WorldItemUpdate
+    WorldItemUpdate,
+    CharacterDead
 
 }

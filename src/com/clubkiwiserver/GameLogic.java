@@ -63,7 +63,7 @@ public class GameLogic implements Runnable
                 }
 
             }
-            catch (InterruptedException ex)
+            catch (Exception ex)
             {
                 System.out.println("Gamelogic interrupted");
             }

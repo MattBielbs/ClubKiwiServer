@@ -119,6 +119,10 @@ public class Main implements Runnable
                     Clients.add(client);
                 }
 
+                //debug info
+                if((int)Main.cVarRegistry.getCVar("debuginfo") > 1 && p.getType() != PacketType.KiwiPos_C)
+                    System.out.println("RECV " + p.getType().toString() + ": " + arraytostring(p.getAllData()));
+
                 //Send the packet to the clients recieve function.
                 client.OnDataReceive(p);
 
@@ -137,8 +141,8 @@ public class Main implements Runnable
         try
         {
             //debug info
-            if((int)Main.cVarRegistry.getCVar("debuginfo") > 1)
-                System.out.println(type.toString() + ": " + arraytostring(args));
+            if((int)Main.cVarRegistry.getCVar("debuginfo") > 1 && type != PacketType.KiwiPos_S)
+                System.out.println("SEND " + type.toString() + ": " + arraytostring(args));
 
             //Format the packet and send it.
             byte[] sendData = s.Serialize(type, args);
