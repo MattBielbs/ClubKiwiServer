@@ -4,8 +4,7 @@ package com.clubkiwiserver.Packet;
  * Created by Mathew on 8/2/2015.
  */
 public enum PacketType
-{//C=client, S=server
-    //trevor says should be uppercase rip
+{
     Connect,
     CreateUser_S,
     CreateUser_C,
@@ -26,5 +25,4 @@ public enum PacketType
     WorldItemRemove,
     WorldItemUpdate,
     CharacterDead
-
 }

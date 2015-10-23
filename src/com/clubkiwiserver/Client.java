@@ -62,7 +62,7 @@ public class Client
                 else
                 {
                     //Worked send kiwi
-                    Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
+                    Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getHunger(), id);
 
                     setClientState(ClientState.LoggedIn);
                     setUsername(username);
@@ -86,7 +86,7 @@ public class Client
             else
             {
                 //worked send default kiwi
-                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getStrength(), k.getSpeed(), k.getFlight(), k.getSwag(), k.getHunger(), k.getMood(), k.getEnergy(), id);
+                Main.SendData(this, PacketType.CharacterList_S, k.getName(), k.getHealth(), k.getMoney(), k.getHunger(), id);
 
                 setClientState(ClientState.LoggedIn);
                 setUsername(username);
@@ -97,7 +97,7 @@ public class Client
         else if(p.getType() == PacketType.KiwiUpdate_C)
         {
             //Update character
-            Main.dbHelper.UpdateCharacter(this, (Double)p.getData(0), (Double)p.getData(1), (Double)p.getData(2), (Double)p.getData(3), (Double)p.getData(4), (Double)p.getData(5), (Double)p.getData(6), (Double)p.getData(7), (Double)p.getData(8));
+            Main.dbHelper.UpdateCharacter(this, (Double)p.getData(0), (Double)p.getData(1), (Double)p.getData(2));
 
             //Load values from database and overwrite, also send to client.
             setkInstance(Main.dbHelper.Login(getUsername(), getPassword()));
@@ -225,7 +225,7 @@ public class Client
         if(kInstance.getHealth() <= 0)
             Main.SendData(this, PacketType.CharacterDead, kInstance.getName());
         else
-            Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+            Main.SendData(this, PacketType.KiwiUpdate_S, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getHunger());
 
         //Tell you about dispensers in room
         sendDespensersFromRoom();
@@ -245,7 +245,7 @@ public class Client
             {
                 //All other clients
                 if(type == PacketType.OtherPlayer_S)
-                    Main.SendData(cc, type, id, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getStrength(), kInstance.getSpeed(), kInstance.getFlight(), kInstance.getSwag(), kInstance.getHunger(), kInstance.getMood(), kInstance.getEnergy());
+                    Main.SendData(cc, type, id, kInstance.getName(), kInstance.getHealth(), kInstance.getMoney(), kInstance.getHunger());
                 else if(type == PacketType.Disconnect_S)
                     Main.SendData(cc, type, id);
                 else if(type == PacketType.KiwiPos_S)
@@ -260,7 +260,7 @@ public class Client
         {
             if (cc.id != this.id)
             {
-                Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getStrength(), cc.kInstance.getSpeed(), cc.kInstance.getFlight(), cc.kInstance.getSwag(), cc.kInstance.getHunger(), cc.kInstance.getMood(), cc.kInstance.getEnergy());
+                Main.SendData(this, PacketType.OtherPlayer_S, cc.id, cc.kInstance.getName(), cc.kInstance.getHealth(), cc.kInstance.getMoney(), cc.kInstance.getHunger());
                 Main.SendData(this, PacketType.KiwiPos_S, cc.id, cc.kInstance.getX(), cc.kInstance.getY(), cc.kInstance.getCurrentRoom());
             }
         }

@@ -105,7 +105,7 @@ public class DBHelper
             System.out.print("Users ");
             s.execute("create table users(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), username varchar(16), password varchar(16))");
             System.out.print("OK! \nCharacters ");
-            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health float, money int, strength int, speed int, flight int, swag int, hunger float, mood int, energy int)");
+            s.execute("create table characters(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), accid int, name varchar(16), health float, money int, hunger float)");
             System.out.print("OK! \nItems ");
             s.execute("create table items(id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(100), description varchar(100))");
             System.out.println("OK!");
@@ -166,8 +166,8 @@ public class DBHelper
                 int accid = rs.getInt(1);
 
                 //Create a default kiwi for the user
-                KiwiData k = new KiwiData(username, 100, 0, 0, 0, 0, 0, 100, 100, 100);
-                s.execute("INSERT INTO characters (accid, name, health, money, strength, speed, flight, swag, hunger, mood, energy) VALUES (" + accid + ", '" + username + "', 100, 0, 0, 0, 0, 0, 100, 100, 100)");
+                KiwiData k = new KiwiData(username, 100, 0, 100);
+                s.execute("INSERT INTO characters (accid, name, health, money, hunger) VALUES (" + accid + ", '" + username + "', 100, 0, 100)");
                 return k;
 
             }
@@ -198,7 +198,7 @@ public class DBHelper
                 if(rs.next())
                 {
                     //this should always be the case else the acc needs to be deleted rip
-                    return new KiwiData(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("strength"), rs.getDouble("speed"), rs.getDouble("flight"), rs.getDouble("swag"), rs.getDouble("hunger"), rs.getDouble("mood"), rs.getDouble("energy"));
+                    return new KiwiData(rs.getString("name"), rs.getDouble("health"), rs.getDouble("money"), rs.getDouble("hunger"));
                 }
                 else
                 {
@@ -234,14 +234,14 @@ public class DBHelper
         }
     }
 
-    public void UpdateCharacter(Client c, double health, double money, double strength, double speed, double flight, double swag, double hunger, double mood, double energy) throws IllegalStateException
+    public void UpdateCharacter(Client c, double health, double money, double hunger) throws IllegalStateException
     {
         if(!bConnected)
             throw new IllegalStateException("You must be connected to the database to update character.");
 
         try
         {
-            s.execute("UPDATE characters SET health = " + health + ", money = " + money + ", strength = " + strength + ", speed = " + speed + ", flight = " + flight + ", swag = " + swag + ", hunger = " + hunger + ", mood = " + mood + ", energy = " + energy + " WHERE accid = " + GetUserID(c.getUsername(), c.getPassword()));
+            s.execute("UPDATE characters SET health = " + health + ", money = " + money + ", hunger = " + hunger +  " WHERE accid = " + GetUserID(c.getUsername(), c.getPassword()));
         }
         catch(SQLException ex)
         {

@@ -22,7 +22,7 @@ public class CVarRegistry
 
     public void doCommand(String command)
     {
-        String[] split = command.split("\\s+");//set timeframe 1.0
+        String[] split = command.split("\\s+");
         if(split.length > 1)
         {
             CVar temp = Registry.get(split[1]);
